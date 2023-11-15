@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+int main() {
+    const char *filename = "example.txt";
+    mode_t permissions = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH; // rw-r--r--
+
+    // Create a file or open an existing one
+    FILE *file = fopen(filename, "w");
+
+    if (file == NULL) {
+        perror("fopen");
+        exit(1);
+    }
+
+    // Set the file permissions
+    if (chmod(filename, permissions) != 0) {
+        perror("chmod");
+        exit(1);
+    }
+
+    printf("File '%s' created or opened with permissions set to rw-r--r--\n", filename);
+
+    // Check the user type
+    uid_t real_user = getuid();
+    uid_t effective_user = geteuid();
+
+    if (real_user == 0) {
+        printf("You are the superuser (root).\n");
+    } else {
+        printf("Real user ID: %d\n", real_user);
+        printf("Effective user ID: %d\n", effective_user);
+    }
+
+    fclose(file);
+
+    return 0;
+}
