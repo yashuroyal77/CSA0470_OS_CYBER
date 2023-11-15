@@ -1,0 +1,59 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main() {
+    // Create a file and write data to it
+    FILE *file = fopen("example.txt", "w");
+
+    if (file == NULL) {
+        perror("fopen");
+        exit(1);
+    }
+
+    char data[] = "This is some sample data that we are writing to a file.";
+    if (fwrite(data, 1, strlen(data), file) != strlen(data)) {
+        perror("fwrite");
+        fclose(file);
+        exit(1);
+    }
+
+    printf("Data written to file: %s\n", data);
+
+    // Close the file
+    fclose(file);
+
+    // Open the file and read data from it
+    file = fopen("example.txt", "r");
+
+    if (file == NULL) {
+        perror("fopen");
+        exit(1);
+    }
+
+    char buffer[100];
+    size_t bytesRead = fread(buffer, 1, sizeof(buffer), file);
+
+    if (bytesRead == 0) {
+        perror("fread");
+        fclose(file);
+        exit(1);
+    }
+
+    buffer[bytesRead] = '\0';
+
+    printf("Data read from file: %s\n", buffer);
+
+    // Close the file
+    fclose(file);
+
+    // Delete the file
+    if (remove("example.txt") != 0) {
+        perror("remove");
+        exit(1);
+    }
+
+    printf("File 'example.txt' deleted.\n");
+
+    return 0;
+}
