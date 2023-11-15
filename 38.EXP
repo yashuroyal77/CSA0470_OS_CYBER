@@ -1,0 +1,83 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    int n, head, seek_sequence[100];
+
+    printf("Enter the number of disk requests: ");
+    scanf("%d", &n);
+
+    printf("Enter the current position of the disk head: ");
+    scanf("%d", &head);
+
+    int requests[n];
+
+    printf("Enter the disk request queue:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &requests[i]);
+    }
+
+    // Sort the requests in ascending order
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (requests[j] > requests[j + 1]) {
+                int temp = requests[j];
+                requests[j] = requests[j + 1];
+                requests[j + 1] = temp;
+            }
+        }
+    }
+
+    int left = -1, right = n, total_seek_time = 0, direction = 1, next;
+
+    for (int i = 0; i < n; i++) {
+        if (direction == 1) {
+            if (requests[i] >= head) {
+                next = requests[i];
+                right = i;
+                break;
+            }
+        } else {
+            if (requests[n - 1 - i] <= head) {
+                next = requests[n - 1 - i];
+                left = n - 1 - i;
+                break;
+            }
+        }
+    }
+
+    while (left >= 0 || right < n) {
+        if (direction == 1) {
+            seek_sequence[i] = requests[right];
+            total_seek_time += abs(next - requests[right]);
+            head = requests[right];
+            right++;
+            if (right < n) {
+                next = requests[right];
+            } else {
+                direction = -1;
+            }
+        } else {
+            seek_sequence[i] = requests[left];
+            total_seek_time += abs(next - requests[left]);
+            head = requests[left];
+            left--;
+            if (left >= 0) {
+                next = requests[left];
+            } else {
+                direction = 1;
+            }
+        }
+        i++;
+    }
+
+    printf("Seek Sequence: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d ", seek_sequence[i]);
+    }
+    printf("\n");
+
+    printf("Total Seek Time: %d\n", total_seek_time);
+
+    return 0;
+}
